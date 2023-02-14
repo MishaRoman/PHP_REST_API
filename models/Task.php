@@ -1,12 +1,13 @@
-<?php 
+<?php
 
-require_once '../../config/Auth.php';
-require_once '../../config/Storage.php';
-require_once 'Model.php';
+namespace App\models;
+
+use App\core\Auth;
+use App\core\Storage;
+use PDO;
 
 class Task extends Model
 {
-	private $conn;
 	private $table = 'tasks';
 
 	public $id;
@@ -20,16 +21,15 @@ class Task extends Model
 	public $image;
 	public $created_at;
 
-	public function __construct($db)
+	public function __construct()
 	{
+		parent::__construct();
+
 		if (!Auth::check()) {
 			http_response_code(403);
 			echo json_encode(['error' => 'unauthorized']);
 			die();
 		};
-
-		$this->conn = $db;
-		session_start();
 	}
 
 	public function read(array $params): array
@@ -90,7 +90,7 @@ class Task extends Model
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	public function read_single(int $id): array
+	public function findById(int $id): array
 	{
 		$query = "SELECT
 			t.id,

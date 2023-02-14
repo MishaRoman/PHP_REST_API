@@ -1,5 +1,7 @@
 <?php
 
+namespace App\core;
+
 session_start();
 
 class Auth

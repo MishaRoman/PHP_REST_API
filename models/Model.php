@@ -1,8 +1,21 @@
-<?php 
+<?php
+
+namespace App\models;
+
+use App\core\Database;
 
 abstract class Model
 {
 	public array $errors = [];
+
+	protected $conn;
+
+	public function __construct()
+	{
+		$database = new Database();
+		$db = $database->connect();
+		$this->conn = $db;
+	}
 
 	abstract public function validationRules(): array;
 

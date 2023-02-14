@@ -1,17 +1,15 @@
-<?php 
+<?php
 
-class Category
+namespace App\models;
+
+use PDO;
+
+class Category extends Model
 {
-    private $conn;
     private $table = 'categories';
 
     public $id;
     public $name;
-
-    public function __construct($db)
-    {
-        $this->conn = $db;
-    }
 
     public function read(): array
     {
@@ -25,5 +23,10 @@ class Category
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function validationRules(): array
+    {
+        return [];
     }
 }

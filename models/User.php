@@ -1,35 +1,30 @@
 <?php 
 
-require_once '../../config/Auth.php';
+namespace App\models;
 
-class User
+use PDO;
+use App\core\Auth;
+
+class User extends Model
 {
-	private $conn;
 	private string $table = 'users';
 	
 	public string $email;
 	public string $password;
-	public array $validation_errors = [];
 
-	public function __construct($db)
-	{
-		$this->conn = $db;
-		session_start();
-	}
-
-	public function create(): bool
+	public function register(): bool
 	{
 		// Validation
 		if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-		  	$this->validation_errors['email'][] = 'Invalid email address';
+		  	$this->errors['email'][] = 'Invalid email address';
 		}
 		if ($this->getUserByEmail($this->email)) {
-			$this->validation_errors['email'][] = 'This email is already taken';
+			$this->errors['email'][] = 'This email is already taken';
 		}
 		if (strlen($this->password) < 6) {
-			$this->validation_errors['password'][] = 'Password length must be more than 6';
+			$this->errors['password'][] = 'Password length must be more than 6';
 		}
-		if ($this->validation_errors) {
+		if ($this->errors) {
 			return false;
 		}
 		// Create
@@ -63,15 +58,19 @@ class User
 
 	public function login(): bool
 	{
+		if (!$this->email) {
+			$this->errors['email'][] = 'Email field is required';
+	    	return false;
+		}
 		$user = $this->getUserByEmail($this->email);		
 
 	    if (!$user) {
-	    	$this->validation_errors['email'][] = 'User with this email address not exists';
+	    	$this->errors['email'][] = 'User with this email address not exists';
 	    	return false;
 	    }
 
 	    if (!password_verify($this->password, $user['password'])){
-			$this->validation_errors['password'][] = 'Password is incorrect';
+			$this->errors['password'][] = 'Password is incorrect';
             return false;
         }
 
@@ -84,12 +83,16 @@ class User
 		return true;
 	}
 
+	public function validationRules(): array
+	{
+		return [];
+	}
+
 	private function getUserByEmail(string $email)
 	{
 		$query = "SELECT * FROM " . $this->table . " WHERE email = '$email'";
 		$stmt = $this->conn->query($query);
 	    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
 	    return $result;
 	}
 }

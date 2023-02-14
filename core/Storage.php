@@ -1,4 +1,6 @@
-<?php 
+<?php
+
+namespace App\core;
 
 class Storage
 {
