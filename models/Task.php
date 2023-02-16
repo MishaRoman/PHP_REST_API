@@ -49,16 +49,16 @@ class Task extends Model
 		  LEFT JOIN
 		  	categories c ON t.category_id = c.id
 		  WHERE t.user_id = ? ";
-		
+
 		if($params) {
 			foreach($params as $param => $value) {
 				if($param === 'active') {
-					if($value === 0 || $value === 1) {
+					if($value === "0" || $value === "1") {
 						$query .= "AND t.is_active = $value ";
 					}
 				}
 				if($param === 'urgent') {
-					if($value === 0 || $value === 1) {
+					if($value === "0" || $value === "1") {
 						$query .= "AND t.is_urgent = $value ";
 					}
 				}
@@ -68,7 +68,7 @@ class Task extends Model
 		$orderby = $params['orderby'];
 		
 		if($orderby) {
-			if($orderby == 'asc' || $orderby == 'desc') {
+			if($orderby === 'asc' || $orderby === 'desc') {
 				$query .= "ORDER BY t.created_at $orderby";
 			}
 		} else {

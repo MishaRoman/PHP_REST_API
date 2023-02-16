@@ -2,33 +2,41 @@
 
 namespace App\core;
 
+use App\core\Request;
+
 class Router
 {
 	public array $routes = [];
+	private Request $request;
 
-	public function get($path, $callback)
+	public function __construct()
+	{
+		$this->request = new Request();
+	}
+
+	public function get(string $path, array $callback)
 	{
 		$this->routes['get'][$path] = $callback;
 	}
 
-	public function post($path, $callback)
+	public function post(string $path, array $callback)
 	{
 		$this->routes['post'][$path] = $callback;
 	}
 
-	public function put($path, $callback)
+	public function put(string $path, array $callback)
 	{
 		$this->routes['put'][$path] = $callback;
 	}
 
-	public function delete($path, $callback)
+	public function delete(string $path, array $callback)
 	{
 		$this->routes['delete'][$path] = $callback;
 	}
 
 	public function resolve()
 	{
-		$path = $this->getPath();
+		$path = $this->request->getPath();
 		$method = strtolower($_SERVER['REQUEST_METHOD']);
 
 		$callback = $this->routes[$method][$path] ?? false;
@@ -42,16 +50,6 @@ class Router
     	$controller->action = $callback[1];
     	$callback[0] = $controller;
 
-    	return call_user_func($callback);
-	}
-
-	public function getPath()
-	{
-		$path = $_SERVER['REQUEST_URI'] ?? '/';
-		$position = strpos($path, '?');
-		if ($position === false) {
-			return $path;
-		}
-		return substr($path, 0, $position);
+    	return call_user_func($callback, $this->request);
 	}
 }

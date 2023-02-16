@@ -2,18 +2,21 @@
 
 namespace App\controllers;
 
+use App\core\Request;
 use App\models\Task;
 
 class TasksController extends Controller
 {
-	public function create()
+	public function create(Request $request)
 	{
+		$data = $request->all();
+
 		$task = new Task();
 
-		$task->title = $_POST['title'];
-		$task->body = $_POST['body'];
-		$task->is_urgent = $_POST['is_urgent'] ?? 0;
-		$task->category_id = $_POST['category_id'];
+		$task->title = $data['title'];
+		$task->body = $data['body'];
+		$task->is_urgent = $data['is_urgent'] ?? 0;
+		$task->category_id = $data['category_id'];
 
 		if ($task->create()) {
 			http_response_code(201);
@@ -27,11 +30,11 @@ class TasksController extends Controller
 		}
 	}
 
-	public function read()
+	public function read(Request $request)
 	{
-		$task = new Task($db);
+		$task = new Task();
 
-		$params = $_GET;
+		$params = $request->get();
 
 		$result = $task->read($params);
 
@@ -48,11 +51,11 @@ class TasksController extends Controller
 		}
 	}
 
-	public function show()
+	public function show(Request $request)
 	{
-		$task = new Task($db);
+		$task = new Task();
 
-		$id = isset($_GET['id']) ? $_GET['id']: die();
+		$id = $request->get('id');
 
 		$task = $task->findById($id);
 
@@ -63,18 +66,18 @@ class TasksController extends Controller
 		echo json_encode($task);
 	}
 
-	public function update()
+	public function update(Request $request)
 	{
-		$data = json_decode(file_get_contents("php://input"));
+		$data = $request->all();
 
-		$task = new Task($db);
+		$task = new Task();
 
-		$task->id = isset($_GET['id']) ? $_GET['id']: die();
-		$task->title = $data->title;
-		$task->body = $data->body;
-		$task->is_active = $data->is_active;
-		$task->is_urgent = $data->is_urgent;
-		$task->category_id = $data->category_id;
+		$task->id = $data['id'];
+		$task->title = $data['title'];
+		$task->body = $data['body'];
+		$task->is_active = $data['is_active'];
+		$task->is_urgent = $data['is_urgent'];
+		$task->category_id = $data['category_id'];
 
 		$result = $task->update();
 
@@ -87,11 +90,11 @@ class TasksController extends Controller
 		}
 	}
 
-	public function delete()
+	public function delete(Request $request)
 	{
-		$task = new Task($db);
+		$task = new Task();
 
-		$task->id = isset($_GET['id']) ? $_GET['id']: die();
+		$task->id = $request->get('id');
 
 		if ($task->delete()) {
 			http_response_code(204);
