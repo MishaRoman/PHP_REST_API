@@ -50,15 +50,15 @@ class Task extends Model
 		  	categories c ON t.category_id = c.id
 		  WHERE t.user_id = ? ";
 
-		if($params) {
+		if ($params) {
 			foreach($params as $param => $value) {
-				if($param === 'active') {
-					if($value === "0" || $value === "1") {
+				if ($param === 'active') {
+					if ($value === "0" || $value === "1") {
 						$query .= "AND t.is_active = $value ";
 					}
 				}
-				if($param === 'urgent') {
-					if($value === "0" || $value === "1") {
+				if ($param === 'urgent') {
+					if ($value === "0" || $value === "1") {
 						$query .= "AND t.is_urgent = $value ";
 					}
 				}
@@ -67,8 +67,8 @@ class Task extends Model
 
 		$orderby = $params['orderby'];
 		
-		if($orderby) {
-			if($orderby === 'asc' || $orderby === 'desc') {
+		if ($orderby) {
+			if ($orderby === 'asc' || $orderby === 'desc') {
 				$query .= "ORDER BY t.created_at $orderby";
 			}
 		} else {
@@ -77,7 +77,7 @@ class Task extends Model
 
 		$limit = intval($params['limit']);
 
-		if(isset($limit) && $limit > 0) {
+		if (isset($limit) && $limit > 0) {
 			$query .= "LIMIT $limit";
 		}
 
@@ -116,7 +116,7 @@ class Task extends Model
 		$stmt->execute();
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		
-		if(!$row) {
+		if (!$row) {
 			http_response_code(404);
 			die();
 		}
@@ -151,7 +151,7 @@ class Task extends Model
 
 		$this->user_id = Auth::getAuthUserId();
 
-		if(isset($_FILES['image'])) {
+		if (isset($_FILES['image'])) {
 			try {
 				$image = Storage::saveImage($_FILES['image'], '../../uploads');
 			} catch (Exception $e) {
@@ -160,14 +160,16 @@ class Task extends Model
 			}
 		}
 
-		$stmt->bindParam(':title', $this->title);
-		$stmt->bindParam(':body', $this->body);
-		$stmt->bindParam(':user_id', $this->user_id);
-		$stmt->bindParam(':category_id', $this->category_id);
-		$stmt->bindParam(':is_urgent', $this->is_urgent);
-		$stmt->bindParam(':image', $image);
+		$params = [
+			':title' => $this->title,
+			':body' => $this->body,
+			':user_id' => $this->user_id,
+			':is_urgent' => $this->is_urgent,
+			':image' => $this->image,
+			':category_id' => $this->category_id,
+		];
 
-		if($stmt->execute()) {
+		if ($stmt->execute($params)) {
 			return true;
 		}
 
@@ -180,12 +182,12 @@ class Task extends Model
 	{
 		$task = $this->getById($this->id);
 
-		if(!$task) {
+		if (!$task) {
 			http_response_code(404);
 			die();
 		}
 
-		if($task['user_id'] !== Auth::getAuthUserId()) {
+		if ($task['user_id'] !== Auth::getAuthUserId()) {
 			http_response_code(403);
 			echo json_encode(['error' => 'unauthorized']);
 			die();
@@ -202,21 +204,17 @@ class Task extends Model
 		    id = :id";
 
 		$stmt = $this->conn->prepare($query);
-		
-		$this->title = htmlspecialchars(strip_tags($this->title));
-		$this->body = htmlspecialchars(strip_tags($this->body));
-		$this->is_active = htmlspecialchars(strip_tags($this->is_active));
-		$this->is_urgent = htmlspecialchars(strip_tags($this->is_urgent));
-		$this->category_id = htmlspecialchars(strip_tags($this->category_id));
 
-		$stmt->bindParam(':title', $this->title);
-		$stmt->bindParam(':body', $this->body);
-		$stmt->bindParam(':is_urgent', $this->is_urgent);
-		$stmt->bindParam(':is_active', $this->is_active);
-		$stmt->bindParam(':category_id', $this->category_id);
-		$stmt->bindParam(':id', $task['id']);
+		$params = [
+			':title' => $this->title,
+			':body' => $this->body,
+			':is_urgent' => $this->is_urgent,
+			':is_active' => $this->is_active,
+			':category_id' => $this->category_id,
+			':id' => $task['id'],
+		];
 
-		if($stmt->execute()) {
+		if ($stmt->execute($params)) {
 			$task = $this->getById($task['id']);
 			return $task;	
 		}
@@ -229,12 +227,12 @@ class Task extends Model
 	{
 		$task = $this->getById($this->id);
 		
-		if(!$task) {
+		if (!$task) {
 			http_response_code(404);
 			die();
 		}
 
-		if($task['user_id'] !== Auth::getAuthUserId()) {
+		if ($task['user_id'] !== Auth::getAuthUserId()) {
 			http_response_code(403);
 			echo json_encode(['error' => 'unauthorized']);
 			die();
@@ -243,9 +241,8 @@ class Task extends Model
 		$query = "DELETE FROM " . $this->table . " WHERE id = :id";
 
 		$stmt = $this->conn->prepare($query);
-		$stmt->bindParam(':id', $task['id']);
 
-		if($stmt->execute()) {
+		if ($stmt->execute([':id' => $task['id']])) {
 			return true;
 		}
 
@@ -262,7 +259,7 @@ class Task extends Model
 		];
 	}
 
-	private function getById($id)
+	private function getById(int $id)
 	{
 		$query = "SELECT
 			t.id,

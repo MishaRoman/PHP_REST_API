@@ -31,7 +31,7 @@ class User extends Model
 		$stmt->bindParam(':email', $this->email);
 		$stmt->bindParam(':password', $this->password);
 
-		if($stmt->execute()) {
+		if ($stmt->execute()) {
 			$user = $this->getUserByEmail($this->email);
 			$_SESSION['user_id'] = $user['id'];
 

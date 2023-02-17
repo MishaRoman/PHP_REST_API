@@ -10,11 +10,11 @@ class Storage
 
 		$valid_extensions = ['jpg', 'jpeg', 'png'];
 
-		if(!in_array($fileExtension, $valid_extensions)) {
+		if (!in_array($fileExtension, $valid_extensions)) {
 			throw new Exception("File extension is not supported");
 		}
 
-		if($file['size'] > 5000000) {
+		if ($file['size'] > 5000000) {
 			throw new Exception("Maximum filesize is 5MB");
 		}
 

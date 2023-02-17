@@ -23,7 +23,7 @@ abstract class Model
 			$value = $this->{$attribute};
 			foreach ($rules as $rule) {
 				$ruleName = $rule;
-				if(!is_string($ruleName)) {
+				if (!is_string($ruleName)) {
 					$ruleName = $rule[0];
 				}
 
@@ -45,7 +45,7 @@ abstract class Model
 					$stmt = $this->conn->prepare("SELECT * FROM $table WHERE $attribute = :attr");
 					$stmt->execute([':attr' => $value]);
 					$result = $stmt->fetchObject();
-					
+
 					if ($result) {
 						$this->addErrorForRule($attribute, 'unique', $rule);
 					}

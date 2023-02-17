@@ -12,7 +12,7 @@ class CategoriesController extends Controller
 
 		$categories = $category->read();
 
-		if($categories) {
+		if ($categories) {
 			echo json_encode($categories);
 		} else {
 			echo json_encode([]);

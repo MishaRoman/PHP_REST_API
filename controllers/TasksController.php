@@ -38,13 +38,13 @@ class TasksController extends Controller
 
 		$result = $task->read($params);
 
-		for($i = 0; $i < count($result); $i++) {
-			if($result[$i]['image']) {
+		for ($i = 0; $i < count($result); $i++) {
+			if ($result[$i]['image']) {
 				$result[$i]['image'] = dirname(dirname(__DIR__)) . '\uploads\\' . $result[$i]['image'];
 			}
 		}
 
-		if($result) {
+		if ($result) {
 			echo json_encode($result);
 		} else {
 			echo json_encode([]);
@@ -59,7 +59,7 @@ class TasksController extends Controller
 
 		$task = $task->findById($id);
 
-		if($task['image']) {
+		if ($task['image']) {
 			$task['image'] = dirname(dirname(__DIR__)) . '\uploads\\' . $task['image'];
 		}
 
