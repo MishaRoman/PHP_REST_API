@@ -6,10 +6,10 @@ use PDO;
 
 class Category extends Model
 {
-    private $table = 'categories';
+    private string $table = 'categories';
 
-    public $id;
-    public $name;
+    public int $id;
+    public string $name;
 
     public function read(): array
     {

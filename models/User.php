@@ -18,7 +18,6 @@ class User extends Model
 			return false;
 		}
 
-		// Create
 		$this->password = password_hash($this->password, PASSWORD_DEFAULT);
 
 		$query = "INSERT INTO " . $this->table . "
@@ -28,10 +27,12 @@ class User extends Model
 
 		$stmt = $this->conn->prepare($query);
 
-		$stmt->bindParam(':email', $this->email);
-		$stmt->bindParam(':password', $this->password);
+		$params = [
+			':email' => $this->email,
+			':password' => $this->password,
+		];
 
-		if ($stmt->execute()) {
+		if ($stmt->execute($params)) {
 			$user = $this->getUserByEmail($this->email);
 			$_SESSION['user_id'] = $user['id'];
 

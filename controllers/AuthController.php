@@ -3,16 +3,18 @@
 namespace App\controllers;
 
 use App\core\Database;
+use App\core\Request;
 use App\models\User;
 
 class AuthController extends Controller
 {
-	public function register()
+	public function register(Request $request)
 	{
 		$user = new User();
+		$data = $request->all();
 
-		$user->email = trim($_POST['email']);
-		$user->password = trim($_POST['password']);
+		$user->email = $data['email'];
+		$user->password = $data['password'];
 
 		if ($user->register()) {
 			echo json_encode([
@@ -26,12 +28,13 @@ class AuthController extends Controller
 		}
 	}
 
-	public function login()
+	public function login(Request $request)
 	{
 		$user = new User();
+		$data = $request->all();
 
-		$user->email = trim($_POST['email']);
-		$user->password = trim($_POST['password']);
+		$user->email = $data['email'];
+		$user->password = $data['password'];
 
 		if ($user->login()) {
 			echo json_encode([

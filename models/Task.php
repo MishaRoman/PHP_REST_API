@@ -8,7 +8,7 @@ use PDO;
 
 class Task extends Model
 {
-	private $table = 'tasks';
+	private string $table = 'tasks';
 
 	public $id;
 	public $title;
