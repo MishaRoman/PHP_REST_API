@@ -24,9 +24,4 @@ class Category extends Model
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-    public function validationRules(): array
-    {
-        return [];
-    }
 }

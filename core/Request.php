@@ -18,13 +18,16 @@ class Request
 	public function getData()
 	{
 		foreach ($_GET as $key => $value) {
-			$this->data['get'][$key] = $value;
+			$this->data['get'][$key] = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
 		}
 		foreach ($_POST as $key => $value) {
-			$this->data['post'][$key] = $value;
+			$this->data['post'][$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
 		}
-		if (!empty(json_decode(file_get_contents("php://input")))) {
-			foreach (json_decode(file_get_contents("php://input")) as $key => $value) {
+		$input = json_decode(file_get_contents("php://input"), true);
+
+		if (!empty($input)) {
+			$input = filter_var_array($input, FILTER_SANITIZE_SPECIAL_CHARS);
+			foreach ($input as $key => $value) {
 				$this->data['input'][$key] = $value;
 			}
 		}

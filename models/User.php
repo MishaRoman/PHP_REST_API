@@ -14,19 +14,10 @@ class User extends Model
 
 	public function register(): bool
 	{
-		// Validation
-		if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-		  	$this->errors['email'][] = 'Invalid email address';
-		}
-		if ($this->getUserByEmail($this->email)) {
-			$this->errors['email'][] = 'This email is already taken';
-		}
-		if (strlen($this->password) < 6) {
-			$this->errors['password'][] = 'Password length must be more than 6';
-		}
-		if ($this->errors) {
+		if (!$this->validate($this->registerValidationRules())) {
 			return false;
 		}
+
 		// Create
 		$this->password = password_hash($this->password, PASSWORD_DEFAULT);
 
@@ -58,9 +49,8 @@ class User extends Model
 
 	public function login(): bool
 	{
-		if (!$this->email) {
-			$this->errors['email'][] = 'Email field is required';
-	    	return false;
+		if (!$this->validate($this->loginValidationRules())) {
+			return false;
 		}
 		$user = $this->getUserByEmail($this->email);		
 
@@ -83,9 +73,20 @@ class User extends Model
 		return true;
 	}
 
-	public function validationRules(): array
+	public function registerValidationRules(): array
 	{
-		return [];
+		return [
+			'email' => ['required', 'email', ['unique', 'users', 'email']],
+			'password' => ['required', ['min', 6]],
+		];
+	}
+
+	public function loginValidationRules(): array
+	{
+		return [
+			'email' => ['required', 'email'],
+			'password' => ['required', ['min', 6]],
+		];
 	}
 
 	private function getUserByEmail(string $email)

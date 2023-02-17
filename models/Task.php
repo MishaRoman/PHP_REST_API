@@ -134,6 +134,10 @@ class Task extends Model
 
 	public function create(): bool
 	{
+		if (!$this->validate($this->validationRules())) {
+			return false;
+		}
+
 		$query = "INSERT INTO " . $this->table . "
 		  SET
 		  	title = :title,
@@ -146,11 +150,6 @@ class Task extends Model
 		$stmt = $this->conn->prepare($query);
 
 		$this->user_id = Auth::getAuthUserId();
-		$this->title = htmlspecialchars(strip_tags($this->title));
-		$this->body = htmlspecialchars(strip_tags($this->body));
-		$this->user_id = htmlspecialchars(strip_tags($this->user_id));
-		$this->category_id = htmlspecialchars(strip_tags($this->category_id));
-		$this->is_urgent = htmlspecialchars(strip_tags($this->is_urgent));
 
 		if(isset($_FILES['image'])) {
 			try {
@@ -159,10 +158,6 @@ class Task extends Model
 				echo $e->getMessage();
 				die();
 			}
-		}
-
-		if (!$this->validate()) {
-			return false;
 		}
 
 		$stmt->bindParam(':title', $this->title);
@@ -263,8 +258,7 @@ class Task extends Model
 	{
 		return [
 			'title' => ['required', ['max', 255]],
-			'category_id' => ['required'],
-			'user_id' => ['required'],
+			'category_id' => ['required', ['exists', 'categories']],
 		];
 	}
 
