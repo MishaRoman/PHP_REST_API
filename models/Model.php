@@ -17,7 +17,7 @@ abstract class Model
 		$this->conn = $db;
 	}
 
-	public function validate($validationRules): bool
+	public function validate(array $validationRules): bool
 	{
 		foreach ($validationRules as $attribute => $rules) {
 			$value = $this->{$attribute};
@@ -29,6 +29,7 @@ abstract class Model
 
 				if ($ruleName === 'required' && !$value) {
 					$this->addErrorForRule($attribute, 'required');
+					break;
 				}
 				if ($ruleName === 'max' && strlen($value) > $rule[1]) {
 					$this->addErrorForRule($attribute, 'max', $rule);

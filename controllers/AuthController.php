@@ -22,6 +22,7 @@ class AuthController extends Controller
 				'token' => $user->token
 			]);
 		} else {
+			http_response_code(422);
 			echo json_encode([
 				'errors' => $user->errors
 			]);

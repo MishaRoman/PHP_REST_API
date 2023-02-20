@@ -9,8 +9,8 @@ class User extends Model
 {
 	private string $table = 'users';
 	
-	public string $email;
-	public string $password;
+	public $email;
+	public $password;
 
 	public function register(): bool
 	{
