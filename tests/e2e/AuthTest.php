@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Client;
+use App\core\DatabaseConnection;
 
 class AuthTest extends TestCase
 {
@@ -65,7 +66,7 @@ class AuthTest extends TestCase
             '/register',
             [
             	'form_params' => [
-            		'email' => 'email@mail.commaas',
+            		'email' => 'email@mail.comms',
             		'password' => 'password'
             	]
             ]
@@ -83,7 +84,7 @@ class AuthTest extends TestCase
             '/register',
             [
             	'form_params' => [
-            		'email' => 'email@mail.comm',
+            		'email' => 'email@mail.comms',
             		'password' => 'password'
             	]
             ]

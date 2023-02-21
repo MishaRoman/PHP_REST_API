@@ -2,7 +2,7 @@
 
 namespace App\models;
 
-use App\core\Database;
+use App\core\DatabaseConnection;
 
 abstract class Model
 {
@@ -12,9 +12,7 @@ abstract class Model
 
 	public function __construct()
 	{
-		$database = new Database();
-		$db = $database->connect();
-		$this->conn = $db;
+		$this->conn = DatabaseConnection::getConnection();
 	}
 
 	public function validate(array $validationRules): bool

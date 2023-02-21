@@ -8,6 +8,22 @@ use App\core\Router;
 use App\controllers\AuthController;
 use App\controllers\CategoriesController;
 use App\controllers\TasksController;
+use App\core\DatabaseConnection;
+
+$dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->load();
+
+$host = $_ENV['DB_HOST'];
+$username = $_ENV['DB_USER'];
+$password = $_ENV['DB_PASSWORD'];
+
+if ($_ENV['APP_ENV'] === 'test') {
+	$db_name = $_ENV['DB_TEST_DATABASE'];
+} else {
+	$db_name = $_ENV['DB_DATABASE'];
+}
+
+DatabaseConnection::connect($host, $db_name, $username, $password);
 
 $router = new Router();
 
