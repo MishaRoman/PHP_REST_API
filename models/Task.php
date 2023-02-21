@@ -255,7 +255,7 @@ class Task extends Model
 	{
 		return [
 			'title' => ['required', ['max', 255]],
-			'category_id' => ['required', ['exists', 'categories']],
+			'category_id' => ['required', ['exists', 'categories', 'id']],
 		];
 	}
 

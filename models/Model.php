@@ -37,6 +37,7 @@ abstract class Model
 				}
 				if ($ruleName === 'email' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
 					$this->addErrorForRule($attribute, 'email', $rule);
+					break;
 				}
 				if ($ruleName === 'unique') {
 					$table = $rule[1];
@@ -51,8 +52,9 @@ abstract class Model
 				}
 				if ($ruleName === 'exists') {
 					$table = $rule[1];
-					$stmt = $this->conn->prepare("SELECT * FROM $table WHERE `id` = :id");				
-					$stmt->execute([':id' => $value]);
+					$attribute = $rule[2];
+					$stmt = $this->conn->prepare("SELECT * FROM $table WHERE $attribute = :attr");				
+					$stmt->execute([':attr' => $value]);
 					$result = $stmt->fetchObject();
 
 					if (!$result) {
@@ -80,7 +82,7 @@ abstract class Model
 			'required' => 'This field is required',
 			'email' => 'Email field must be valid email address',
 			'unique' => 'This field is already exists',
-			'exists' => 'Record with this id does not exists',
+			'exists' => 'Record with this value does not exists in {exists} table',
             'min' => 'Min length of this field must be {min}',
             'max' => 'Max length of this field must be {max}',
 		];

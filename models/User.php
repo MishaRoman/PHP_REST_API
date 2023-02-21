@@ -53,12 +53,7 @@ class User extends Model
 		if (!$this->validate($this->loginValidationRules())) {
 			return false;
 		}
-		$user = $this->getUserByEmail($this->email);		
-
-	    if (!$user) {
-	    	$this->errors['email'][] = 'User with this email address not exists';
-	    	return false;
-	    }
+		$user = $this->getUserByEmail($this->email);
 
 	    if (!password_verify($this->password, $user['password'])){
 			$this->errors['password'][] = 'Password is incorrect';
@@ -85,7 +80,7 @@ class User extends Model
 	public function loginValidationRules(): array
 	{
 		return [
-			'email' => ['required', 'email'],
+			'email' => ['required', 'email', ['exists', 'users', 'email']],
 			'password' => ['required', ['min', 6]],
 		];
 	}
