@@ -12,6 +12,7 @@
         "vlucas/phpdotenv": "^5.5"
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit --verbose tests"
+        "test": "./vendor/bin/phpunit --verbose tests",
+        "test-tasks": "./vendor/bin/phpunit --bootstrap vendor/autoload.php --testsuite tasks"
     }
 }

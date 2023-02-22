@@ -25,6 +25,9 @@ class Auth
 	public static function check(): bool
 	{
 		$bearer_token = self::get_bearer_token();
+		if (is_null($bearer_token)) {
+			return false;
+		}
 		return self::is_jwt_valid($bearer_token);	
 	}
 

@@ -24,8 +24,9 @@ class TasksController extends Controller
 				'message' => 'Task created'
 			]);
 		} else {
+			http_response_code(422);
 			echo json_encode([
-				'message' => $task->errors
+				'errors' => $task->errors
 			]);
 		}
 	}
