@@ -34,14 +34,14 @@ class TasksController extends Controller
 	public function read(Request $request)
 	{
 		$task = new Task();
-
+		
 		$params = $request->get();
 
 		$result = $task->read($params);
 
 		for ($i = 0; $i < count($result); $i++) {
 			if ($result[$i]['image']) {
-				$result[$i]['image'] = dirname(dirname(__DIR__)) . '\uploads\\' . $result[$i]['image'];
+				$result[$i]['image'] = ROOT . '\uploads\\' . $result[$i]['image'];
 			}
 		}
 
@@ -61,7 +61,7 @@ class TasksController extends Controller
 		$task = $task->findById($id);
 
 		if ($task['image']) {
-			$task['image'] = dirname(dirname(__DIR__)) . '\uploads\\' . $task['image'];
+			$task['image'] = ROOT . '\uploads\\' . $task['image'];
 		}
 
 		echo json_encode($task);

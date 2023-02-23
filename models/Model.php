@@ -39,6 +39,13 @@ abstract class Model
 					$this->addErrorForRule($attribute, 'email', $rule);
 					break;
 				}
+				if ($ruleName === 'boolean') {
+					$booleanValues = [true, false, 1, 0, '1', '0'];
+
+					if (!in_array($value, $booleanValues, true)) {
+						$this->addErrorForRule($attribute, 'boolean', $rule);
+					}
+				}
 				if ($ruleName === 'unique') {
 					$table = $rule[1];
 					$attribute = $rule[2];
@@ -83,6 +90,7 @@ abstract class Model
 			'email' => 'Email field must be valid email address',
 			'unique' => 'This field is already exists',
 			'exists' => 'Record with this value does not exists in {exists} table',
+			'boolean' => 'This field must be type of boolean',
             'min' => 'Min length of this field must be {min}',
             'max' => 'Max length of this field must be {max}',
 		];

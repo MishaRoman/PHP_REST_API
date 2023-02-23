@@ -153,7 +153,7 @@ class Task extends Model
 
 		if (isset($_FILES['image'])) {
 			try {
-				$image = Storage::saveImage($_FILES['image'], '../../uploads');
+				$this->image = Storage::saveImage($_FILES['image'], ROOT . '/uploads');
 			} catch (Exception $e) {
 				echo $e->getMessage();
 				die();
@@ -256,6 +256,7 @@ class Task extends Model
 		return [
 			'title' => ['required', ['max', 255]],
 			'category_id' => ['required', ['exists', 'categories', 'id']],
+			'is_urgent' => ['boolean'],
 		];
 	}
 

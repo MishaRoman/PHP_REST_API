@@ -10,6 +10,8 @@ use App\controllers\CategoriesController;
 use App\controllers\TasksController;
 use App\core\DatabaseConnection;
 
+define('ROOT', dirname(__DIR__));
+
 $dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
