@@ -26,7 +26,7 @@ class Task extends Model
 		parent::__construct();
 
 		if (!Auth::check()) {
-			http_response_code(403);
+			http_response_code(401);
 			echo json_encode(['error' => 'unauthorized']);
 			die();
 		};
@@ -81,7 +81,7 @@ class Task extends Model
 			$query .= "LIMIT $limit";
 		}
 
-		$user_id = Auth::getAuthUserId();
+		$user_id = Auth::getUserIdFromToken();
 
 		$stmt = $this->conn->prepare($query);
 		$stmt->bindParam(1, $user_id);
@@ -121,7 +121,7 @@ class Task extends Model
 			die();
 		}
 
-		$user_id = Auth::getAuthUserId();
+		$user_id = Auth::getUserIdFromToken();
 
 		if ($user_id !== $row['user_id']) {
 			http_response_code(403);
@@ -149,7 +149,7 @@ class Task extends Model
 
 		$stmt = $this->conn->prepare($query);
 
-		$this->user_id = Auth::getAuthUserId();
+		$this->user_id = Auth::getUserIdFromToken();
 
 		if (isset($_FILES['image'])) {
 			try {
@@ -187,7 +187,7 @@ class Task extends Model
 			die();
 		}
 
-		if ($task['user_id'] !== Auth::getAuthUserId()) {
+		if ($task['user_id'] !== Auth::getUserIdFromToken()) {
 			http_response_code(403);
 			echo json_encode(['error' => 'unauthorized']);
 			die();
@@ -232,7 +232,7 @@ class Task extends Model
 			die();
 		}
 
-		if ($task['user_id'] !== Auth::getAuthUserId()) {
+		if ($task['user_id'] !== Auth::getUserIdFromToken()) {
 			http_response_code(403);
 			echo json_encode(['error' => 'unauthorized']);
 			die();

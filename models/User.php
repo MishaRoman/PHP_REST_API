@@ -34,9 +34,8 @@ class User extends Model
 
 		if ($stmt->execute($params)) {
 			$user = $this->getUserByEmail($this->email);
-			$_SESSION['user_id'] = $user['id'];
 
-			$jwt = Auth::generate_jwt($this->email);
+			$jwt = Auth::generateJwt($user['id']);
 
             $this->token = $jwt;
 
@@ -60,9 +59,7 @@ class User extends Model
             return false;
         }
 
-        $_SESSION['user_id'] = $user['id'];
-
-		$jwt = Auth::generate_jwt($user['email']);
+		$jwt = Auth::generateJwt($user['id']);
 
         $this->token = $jwt;
 

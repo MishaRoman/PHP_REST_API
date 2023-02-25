@@ -48,8 +48,8 @@ abstract class Model
 				}
 				if ($ruleName === 'unique') {
 					$table = $rule[1];
-					$attribute = $rule[2];
-					$stmt = $this->conn->prepare("SELECT * FROM $table WHERE $attribute = :attr");
+					$attr = $rule[2];
+					$stmt = $this->conn->prepare("SELECT * FROM $table WHERE $attr = :attr");
 					$stmt->execute([':attr' => $value]);
 					$result = $stmt->fetchObject();
 
@@ -59,8 +59,8 @@ abstract class Model
 				}
 				if ($ruleName === 'exists') {
 					$table = $rule[1];
-					$attribute = $rule[2];
-					$stmt = $this->conn->prepare("SELECT * FROM $table WHERE $attribute = :attr");				
+					$attr = $rule[2];
+					$stmt = $this->conn->prepare("SELECT * FROM $table WHERE $attr = :attr");				
 					$stmt->execute([':attr' => $value]);
 					$result = $stmt->fetchObject();
 
