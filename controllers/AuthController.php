@@ -50,5 +50,15 @@ class AuthController extends Controller
 		}
 	}
 
-	
+	public function user()
+	{
+		$user = new User();
+		$userInfo = $user->getAuthUserInfo();
+
+		echo json_encode([
+			'user' => $userInfo
+		]);
+	}
+
+
 }

@@ -33,7 +33,7 @@ class User extends Model
 		];
 
 		if ($stmt->execute($params)) {
-			$user = $this->getUserByEmail($this->email);
+			$user = $this->findBy('email', $this->email);
 
 			$jwt = Auth::generateJwt($user['id']);
 
@@ -52,7 +52,7 @@ class User extends Model
 		if (!$this->validate($this->loginValidationRules())) {
 			return false;
 		}
-		$user = $this->getUserByEmail($this->email);
+		$user = $this->findBy('email', $this->email);
 
 	    if (!password_verify($this->password, $user['password'])){
 			$this->errors['password'][] = 'Password is incorrect';
@@ -64,6 +64,17 @@ class User extends Model
         $this->token = $jwt;
 
 		return true;
+	}
+
+	public function getAuthUserInfo(): array
+	{
+		$id = Auth::getUserIdFromToken();
+		$user = $this->findBy('id', $id);
+		
+		return [
+			'id' => $user['id'],
+			'email' => $user['email'],
+		];
 	}
 
 	public function registerValidationRules(): array
@@ -82,9 +93,9 @@ class User extends Model
 		];
 	}
 
-	private function getUserByEmail(string $email)
+	private function findBy(string $field, string $value)
 	{
-		$query = "SELECT * FROM " . $this->table . " WHERE email = '$email'";
+		$query = "SELECT * FROM " . $this->table . " WHERE $field = '$value'";
 		$stmt = $this->conn->query($query);
 	    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 	    return $result;

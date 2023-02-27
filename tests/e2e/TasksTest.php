@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Client;
 use App\core\DatabaseConnection;
+use App\models\Task;
 
 class TasksTest extends TestCase
 {
@@ -45,9 +46,10 @@ class TasksTest extends TestCase
 
 	public function testGetTasksRequestReturnsErrorWithoutAuthorization()
 	{
-		$response = self::$client->request('GET', '/tasks', ['headers' => null]);
+		$client = new Client(['http_errors' => false]);
+		$response = $client->get('http://api/tasks');
 
-		$this->assertEquals($response->getStatusCode(), 403);
+		$this->assertEquals($response->getStatusCode(), 401);
 	}
 
 	public function testGetTasksRequestReturnsEmptyArray()
@@ -77,6 +79,19 @@ class TasksTest extends TestCase
         $actualJson = json_decode($response->getBody()->getContents(), true);
         $this->assertEquals($expectedJson, $actualJson);
 		$this->assertEquals($response->getStatusCode(), 422);
+	}
+
+	public function testCreateTaskIsSuccessful()
+	{
+		$params = [
+			'title' => 'title',
+			'body' => 'some body once told me',
+			'category_id' => 1,
+			'is_urgent' => 1
+		];
+		$response = self::$client->post('/tasks/create', ['form_params' => $params]);
+
+		$this->assertEquals($response->getStatusCode(), 201);
 	}
 
 	public static function tearDownAfterClass(): void

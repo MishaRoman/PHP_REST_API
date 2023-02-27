@@ -42,7 +42,16 @@ class Auth
 	{
 		$bearer_token = self::getBearerToken();
 
+		if (!$bearer_token) {
+			http_response_code(401);
+			echo json_encode([
+				'error' => 'Api token is empty'
+			]);
+			exit;
+		}
+
 		$secret = $_ENV['SECRET_KEY'];
+
 		try {
 			$token = JWT::decode($bearer_token, new Key($secret, 'HS256'));
 		} catch (\Exception $e) {

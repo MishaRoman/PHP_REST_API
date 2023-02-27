@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-session_start();
-
 use App\core\Router;
 use App\controllers\AuthController;
 use App\controllers\CategoriesController;
@@ -12,7 +10,7 @@ use App\core\DatabaseConnection;
 
 define('ROOT', dirname(__DIR__));
 
-$dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+$dotenv = \Dotenv\Dotenv::createImmutable(ROOT);
 $dotenv->load();
 
 $host = $_ENV['DB_HOST'];
@@ -31,6 +29,7 @@ $router = new Router();
 
 $router->post('/register', [AuthController::class, 'register']);
 $router->post('/login', [AuthController::class, 'login']);
+$router->get('/user', [AuthController::class, 'user']);
 
 $router->get('/tasks', [TasksController::class, 'read']);
 $router->get('/tasks/show', [TasksController::class, 'show']);
@@ -39,6 +38,5 @@ $router->put('/tasks/update', [TasksController::class, 'update']);
 $router->delete('/tasks/delete', [TasksController::class, 'delete']);
 
 $router->get('/categories', [CategoriesController::class, 'read']);
-
 
 $router->resolve();

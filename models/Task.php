@@ -90,7 +90,7 @@ class Task extends Model
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
-	public function findById(int $id): array
+	public function findBy(string $field, string $value): array
 	{
 		$query = "SELECT
 			t.id,
@@ -107,11 +107,11 @@ class Task extends Model
 		  LEFT JOIN
 		  	categories c ON t.category_id = c.id
 		  WHERE
-		    t.id = ?
+		    $field = ?
 		  LIMIT 0,1";
 
 		$stmt = $this->conn->prepare($query);
-		$stmt->bindParam(1, $id);
+		$stmt->bindParam(1, $value);
 
 		$stmt->execute();
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -180,7 +180,7 @@ class Task extends Model
 
 	public function update()
 	{
-		$task = $this->getById($this->id);
+		$task = $this->findBy('id', $this->id);
 
 		if (!$task) {
 			http_response_code(404);
@@ -215,7 +215,7 @@ class Task extends Model
 		];
 
 		if ($stmt->execute($params)) {
-			$task = $this->getById($task['id']);
+			$task = $this->findBy('id', $task['id']);
 			return $task;	
 		}
 
@@ -225,7 +225,7 @@ class Task extends Model
 
 	public function delete(): bool
 	{
-		$task = $this->getById($this->id);
+		$task = $this->findBy('id', $this->id);
 		
 		if (!$task) {
 			http_response_code(404);
@@ -258,35 +258,6 @@ class Task extends Model
 			'category_id' => ['required', ['exists', 'categories', 'id']],
 			'is_urgent' => ['boolean'],
 		];
-	}
-
-	private function getById(int $id)
-	{
-		$query = "SELECT
-			t.id,
-			c.name as category,
-			t.title,
-			t.body,
-			t.user_id,
-			t.category_id,
-			t.is_active,
-			t.is_urgent,
-			t.image,
-			t.created_at
-		  FROM " . $this->table . " t
-		  LEFT JOIN
-		  	categories c ON t.category_id = c.id
-		  WHERE
-		    t.id = ?
-		  LIMIT 0,1";
-
-		$stmt = $this->conn->prepare($query);
-		$stmt->bindParam(1, $id);
-
-		$stmt->execute();
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-		return $row;
 	}
 
 }
