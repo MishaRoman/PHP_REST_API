@@ -3,10 +3,21 @@
 namespace App\controllers;
 
 use App\core\Request;
+use App\core\Auth;
 use App\models\Task;
 
 class TasksController extends Controller
 {
+	public function __construct()
+	{
+		parent::__construct();
+
+		if (!Auth::check()) {
+			http_response_code(401);
+			echo json_encode(['error' => 'unauthorized']);
+			die();
+		};
+	}
 	public function create(Request $request)
 	{
 		$data = $request->all();
@@ -58,7 +69,15 @@ class TasksController extends Controller
 
 		$id = $request->get('id');
 
-		$task = $task->findById($id);
+		$task = $task->findBy('id', $id);
+
+		$user_id = Auth::getUserIdFromToken();
+
+		if ($user_id !== (int) $task['user_id']) {
+			http_response_code(403);
+			echo json_encode(['error' => 'unauthorized']);
+			die();
+		}
 
 		if ($task['image']) {
 			$task['image'] = ROOT . '\uploads\\' . $task['image'];
@@ -70,6 +89,16 @@ class TasksController extends Controller
 	public function update(Request $request)
 	{
 		$data = $request->all();
+
+		$currentTask = (new Task())->findBy('id', $data['id']);
+
+		$user_id = Auth::getUserIdFromToken();
+
+		if ($user_id != $currentTask['user_id']) {
+			http_response_code(403);
+			echo json_encode(['error' => 'unauthorized']);
+			die();
+		}
 
 		$task = new Task();
 
@@ -93,11 +122,17 @@ class TasksController extends Controller
 
 	public function delete(Request $request)
 	{
-		$task = new Task();
+		$task = (new Task())->findBy('id', $request->get('id'));
 
-		$task->id = $request->get('id');
+		$user_id = Auth::getUserIdFromToken();
 
-		if ($task->delete()) {
+		if ($user_id !== (int) $task['user_id']) {
+			http_response_code(403);
+			echo json_encode(['error' => 'unauthorized']);
+			die();
+		}
+
+		if ((new Task())->delete($task['id'])) {
 			http_response_code(204);
 		} else {
 			echo json_encode([

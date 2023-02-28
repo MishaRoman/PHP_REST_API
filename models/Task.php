@@ -21,17 +21,6 @@ class Task extends Model
 	public $image;
 	public $created_at;
 
-	public function __construct()
-	{
-		parent::__construct();
-
-		if (!Auth::check()) {
-			http_response_code(401);
-			echo json_encode(['error' => 'unauthorized']);
-			die();
-		};
-	}
-
 	public function read(array $params): array
 	{
 		$query = "SELECT
@@ -107,7 +96,7 @@ class Task extends Model
 		  LEFT JOIN
 		  	categories c ON t.category_id = c.id
 		  WHERE
-		    $field = ?
+		    t.$field = ?
 		  LIMIT 0,1";
 
 		$stmt = $this->conn->prepare($query);
@@ -118,14 +107,6 @@ class Task extends Model
 		
 		if (!$row) {
 			http_response_code(404);
-			die();
-		}
-
-		$user_id = Auth::getUserIdFromToken();
-
-		if ($user_id !== $row['user_id']) {
-			http_response_code(403);
-			echo json_encode(['error' => 'unauthorized']);
 			die();
 		}
 
@@ -180,19 +161,6 @@ class Task extends Model
 
 	public function update()
 	{
-		$task = $this->findBy('id', $this->id);
-
-		if (!$task) {
-			http_response_code(404);
-			die();
-		}
-
-		if ($task['user_id'] !== Auth::getUserIdFromToken()) {
-			http_response_code(403);
-			echo json_encode(['error' => 'unauthorized']);
-			die();
-		}
-
 		$query = "UPDATE " . $this->table . "
 		  SET
 		  	title = IF('$this->title' = '', title, :title),
@@ -211,11 +179,11 @@ class Task extends Model
 			':is_urgent' => $this->is_urgent,
 			':is_active' => $this->is_active,
 			':category_id' => $this->category_id,
-			':id' => $task['id'],
+			':id' => $this->id,
 		];
 
 		if ($stmt->execute($params)) {
-			$task = $this->findBy('id', $task['id']);
+			$task = $this->findBy('id', $this->id);
 			return $task;	
 		}
 
@@ -223,26 +191,13 @@ class Task extends Model
 		return false;
 	}
 
-	public function delete(): bool
+	public function delete(int $id): bool
 	{
-		$task = $this->findBy('id', $this->id);
-		
-		if (!$task) {
-			http_response_code(404);
-			die();
-		}
-
-		if ($task['user_id'] !== Auth::getUserIdFromToken()) {
-			http_response_code(403);
-			echo json_encode(['error' => 'unauthorized']);
-			die();
-		}
-
 		$query = "DELETE FROM " . $this->table . " WHERE id = :id";
 
 		$stmt = $this->conn->prepare($query);
 
-		if ($stmt->execute([':id' => $task['id']])) {
+		if ($stmt->execute([':id' => $id])) {
 			return true;
 		}
 
